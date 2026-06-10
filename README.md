@@ -18,8 +18,28 @@ The comprehensive documentation includes detailed guides, examples, and API refe
 
 **macOS & Linux via Homebrew:**
 ```bash
-brew tap amberframework/amber_cli
-brew install amber_cli
+brew tap amberframework/amber-cli
+brew install amber-cli
+```
+
+**Direct Binary Download (macOS ARM64 / Linux x86_64):**
+
+Download the pre-built tarball from the [releases page](https://github.com/amberframework/amber_cli/releases) and verify the sha256 before extracting:
+
+```bash
+# macOS ARM64 example — replace VERSION and PLATFORM as needed
+VERSION=2.0.1
+PLATFORM=darwin-arm64   # or linux-x86_64
+
+curl -LO "https://github.com/amberframework/amber_cli/releases/download/v${VERSION}/amber_cli-${PLATFORM}.tar.gz"
+curl -LO "https://github.com/amberframework/amber_cli/releases/download/v${VERSION}/amber_cli-${PLATFORM}.tar.gz.sha256"
+
+# Verify checksum (macOS: shasum -a 256; Linux: sha256sum)
+shasum -a 256 -c "amber_cli-${PLATFORM}.tar.gz.sha256"
+
+# Extract and install
+tar -xzf "amber_cli-${PLATFORM}.tar.gz"
+sudo mv amber amber-lsp /usr/local/bin/
 ```
 
 **From Source:**
@@ -171,7 +191,7 @@ cd ~/open_source_coding_projects/amber_cli
 crystal build src/amber_lsp.cr -o bin/amber-lsp --release
 ```
 
-For full documentation on all 15 rules, configuration options, and custom rule syntax, see the [LSP Setup Guide](https://github.com/crimson-knight/amber/blob/master/docs/guides/lsp-setup.md).
+For full documentation on all 15 rules, configuration options, and custom rule syntax, see the [LSP Setup Guide](https://github.com/amberframework/amber/blob/v2-dev/docs/guides/lsp-setup.md).
 
 ## 📚 Examples
 
@@ -251,7 +271,7 @@ We welcome contributions! Please read our [Contributing Guide](CONTRIBUTING.md) 
 
 ## 📋 Requirements
 
-- **Crystal** 1.0+ (latest stable recommended)
+- **Crystal** 1.20+ (latest stable recommended)
 - **Git** (for project templates)
 - **Database** (PostgreSQL, MySQL, or SQLite)
 
