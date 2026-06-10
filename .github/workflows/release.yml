@@ -103,15 +103,33 @@ jobs:
       with:
         path: artifacts
         
+    - name: Verify artifacts exist
+      run: |
+        set -e
+        for f in \
+          artifacts/amber_cli-darwin-arm64/amber_cli-darwin-arm64.tar.gz \
+          artifacts/amber_cli-darwin-arm64/amber_cli-darwin-arm64.tar.gz.sha256 \
+          artifacts/amber_cli-linux-x86_64/amber_cli-linux-x86_64.tar.gz \
+          artifacts/amber_cli-linux-x86_64/amber_cli-linux-x86_64.tar.gz.sha256; do
+          if [ ! -f "$f" ]; then
+            echo "ERROR: expected file not found: $f"
+            echo "Artifact tree:"
+            find artifacts -type f | sort
+            exit 1
+          fi
+          echo "OK: $f"
+        done
+
     - name: Upload release assets
       uses: softprops/action-gh-release@v3
       with:
         files: |
-          artifacts/amber_cli-darwin-arm64/dist/amber_cli-darwin-arm64.tar.gz
-          artifacts/amber_cli-darwin-arm64/dist/amber_cli-darwin-arm64.tar.gz.sha256
-          artifacts/amber_cli-linux-x86_64/dist/amber_cli-linux-x86_64.tar.gz
-          artifacts/amber_cli-linux-x86_64/dist/amber_cli-linux-x86_64.tar.gz.sha256
+          artifacts/amber_cli-darwin-arm64/amber_cli-darwin-arm64.tar.gz
+          artifacts/amber_cli-darwin-arm64/amber_cli-darwin-arm64.tar.gz.sha256
+          artifacts/amber_cli-linux-x86_64/amber_cli-linux-x86_64.tar.gz
+          artifacts/amber_cli-linux-x86_64/amber_cli-linux-x86_64.tar.gz.sha256
         tag_name: ${{ github.event.release.tag_name }}
+        fail_on_unmatched_files: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
@@ -120,12 +138,20 @@ jobs:
     needs: upload-assets
     runs-on: ubuntu-latest
     if: github.event_name == 'release'
-    
+
     steps:
-    - name: Repository Dispatch
+    - name: Dispatch to underscore tap (homebrew-amber_cli)
       uses: peter-evans/repository-dispatch@v4
       with:
         token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
         repository: amberframework/homebrew-amber_cli
+        event-type: release-published
+        client-payload: '{"version": "${{ github.event.release.tag_name }}"}'
+
+    - name: Dispatch to hyphen tap (homebrew-amber-cli)
+      uses: peter-evans/repository-dispatch@v4
+      with:
+        token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        repository: amberframework/homebrew-amber-cli
         event-type: release-published
         client-payload: '{"version": "${{ github.event.release.tag_name }}"}'
