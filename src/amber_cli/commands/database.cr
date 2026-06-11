@@ -104,7 +104,7 @@ module AmberCLI::Commands
         when "create"
           create_database
         when "seed"
-          Amber::CLI::Helpers.run("crystal db/seeds.cr", wait: true, shell: true)
+          Amber::CLI::Helpers.run("crystal db/seeds.cr", wait: true)
           info "Seeded database"
         when "migrate"
           migrate
